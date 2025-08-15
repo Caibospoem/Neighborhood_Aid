@@ -21,23 +21,6 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer # 使用序列化器进行数据验证和创建
     permission_classes = [permissions.AllowAny] # 允许任何人访问此视图
 
-class LoginView(APIView):
-    """
-    用户登录视图
-    """
-    permission_classes = [permissions.AllowAny] # 允许任何人访问此视图
-
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-
-        # 如果用户存在且密码正确，则返回token和用户信息
-        # 如果用户不存在或密码错误，则返回错误信息
-        if user:
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({"token": token.key, "user": UserProfileSerializer(user).data}, status=status.HTTP_200_OK)
-        return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     """

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -133,3 +134,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.UserProfile'
+
+
+# REST Framework 全局配置 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 认证类配置（按顺序尝试）
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # 使用 Simple JWT 进行认证
+    ]
+
+}
+
+
+# Simple JWT 扩展配置
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5), # Access token 有效期为 5 分钟
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # Refresh token 有效期为 1 天
+    'ROTATE_REFRESH_TOKENS': True, # 是否在刷新时生成新的 Refresh token
+}

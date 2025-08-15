@@ -18,7 +18,13 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/accounts/', include('apps.accounts.urls')),
+    
+    # JWT 认证视图
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # 获取 JWT 访问令牌
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # 刷新 JWT 访问令牌
 ]
