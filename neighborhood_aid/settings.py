@@ -152,3 +152,12 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # Refresh token 有效期为 1 天
     'ROTATE_REFRESH_TOKENS': True, # 是否在刷新时生成新的 Refresh token
 }
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = '2180141783@qq.com'
+EMAIL_HOST_PASSWORD = 'dmreqjrhddbddjab'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
