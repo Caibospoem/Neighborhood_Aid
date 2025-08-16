@@ -56,8 +56,9 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user # 返回当前请求的用户对象
 
-
-@csrf_exempt
+# 发送验证邮件
+# 这个视图可以接受json格式和form格式的请求
+@csrf_exempt # 取消CSRF验证
 def send_verification_email(request):
     if request.method == 'POST':
         import json
@@ -86,6 +87,7 @@ def send_verification_email(request):
         return JsonResponse({'message': 'Verification email sent'}, status=200)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+# 验证邮箱和验证码
 @csrf_exempt
 def verify_code(request):
     if request.method == 'POST':

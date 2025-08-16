@@ -154,10 +154,10 @@ SIMPLE_JWT = {
 }
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.qq.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = '2180141783@qq.com'
-EMAIL_HOST_PASSWORD = 'dmreqjrhddbddjab'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # 使用SMTP后端发送邮件
+EMAIL_HOST = 'smtp.qq.com' # QQ邮箱的SMTP服务器地址
+EMAIL_PORT = 465 # QQ邮箱的SMTP端口
+EMAIL_USE_SSL = True # 使用SSL连接
+EMAIL_HOST_USER = '2180141783@qq.com' # 发件人邮箱地址
+EMAIL_HOST_PASSWORD = 'dmreqjrhddbddjab' # 发件人邮箱的授权码
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # 默认发件人邮箱地址
