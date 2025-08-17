@@ -15,6 +15,8 @@ from django.http import JsonResponse
 from neighborhood_aid.settings import DEFAULT_FROM_EMAIL
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.views import PasswordResetView
+import random
 
 
 
@@ -113,9 +115,19 @@ def verify_code(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
-
-
-
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        code = str(random.randint(100000, 999999))
+        # 存储 code 到数据库或缓存（如 Redis）
+        # 发送验证码邮件
+        send_mail(
+            'Your password reset code',
+            f'Your code is: {code}',
+            'noreply@example.com',
+            [email],
+        )
+        return super().form_valid(form)
 
 
 

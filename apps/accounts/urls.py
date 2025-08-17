@@ -11,4 +11,5 @@ urlpatterns = [
     path('send_verification_email/', send_verification_email, name='send_verification_email'), # 发送邮箱验证邮件
     path('verify_email/', verify_code, name='verify_email'), # 验证邮箱视图
 
+    
 ]
