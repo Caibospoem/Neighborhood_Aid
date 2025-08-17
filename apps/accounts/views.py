@@ -15,9 +15,6 @@ from django.http import JsonResponse
 from neighborhood_aid.settings import DEFAULT_FROM_EMAIL
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.views import PasswordResetView
-import random
-
 
 
 User = get_user_model()
@@ -114,23 +111,62 @@ def verify_code(request):
             return JsonResponse({'error': 'Invalid code.'}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
-class CustomPasswordResetView(PasswordResetView):
-    def form_valid(self, form):
-        email = form.cleaned_data['email']
-        code = str(random.randint(100000, 999999))
-        # 存储 code 到数据库或缓存（如 Redis）
-        # 发送验证码邮件
+# 发送密码重置验证码
+@csrf_exempt
+def send_password_reset_code(request):
+    if request.method == 'POST':
+        import json
+        try:
+            data = json.loads(request.body.decode())
+            email = data.get('email')
+        except Exception:
+            email = request.POST.get('email')
+        if not email:
+            return JsonResponse({'error': 'Email is required'}, status=400)
+        if not User.objects.filter(email=email).exists():
+            return JsonResponse({'error': 'Email not found'}, status=400)
+        code = get_random_string(length=6, allowed_chars='0123456789')
+        EmailVerificationCode.objects.create(email=email, code=code)
         send_mail(
-            'Your password reset code',
-            f'Your code is: {code}',
-            'noreply@example.com',
+            'Password reset code',
+            f'Your password reset code is: {code}',
+            DEFAULT_FROM_EMAIL,
             [email],
+            fail_silently=False,
         )
-        return super().form_valid(form)
+        return JsonResponse({'message': 'Password reset code sent'}, status=200)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
-
+# 重置密码
+@csrf_exempt
+def reset_password(request):
+    if request.method == 'POST':
+        import json
+        try:
+            data = json.loads(request.body.decode())
+            email = data.get('email')
+            code = data.get('code')
+            new_password = data.get('new_password')
+            new_password2 = data.get('new_password2')
+        except Exception:
+            email = request.POST.get('email')
+            code = request.POST.get('code')
+            new_password = request.POST.get('new_password')
+            new_password2 = request.POST.get('new_password2')
+        if not email or not code or not new_password or not new_password2:
+            return JsonResponse({'error': 'Email, code and both passwords are required.'}, status=400)
+        if new_password != new_password2:
+            return JsonResponse({'error': 'Passwords do not match.'}, status=400)
+        try:
+            verification_code = EmailVerificationCode.objects.get(email=email, code=code)
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            verification_code.delete()
+            return JsonResponse({'message': 'Password reset successful.'})
+        except (User.DoesNotExist, EmailVerificationCode.DoesNotExist):
+            return JsonResponse({'error': 'Invalid code or email.'}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, RegisterView, ProfileView, send_verification_email, verify_code
+from .views import home, RegisterView, ProfileView, send_verification_email, verify_code, send_password_reset_code, reset_password
 
 
 
@@ -10,6 +10,7 @@ urlpatterns = [
     
     path('send_verification_email/', send_verification_email, name='send_verification_email'), # 发送邮箱验证邮件
     path('verify_email/', verify_code, name='verify_email'), # 验证邮箱视图
-
+    path('send_password_reset_code/', send_password_reset_code, name='send_password_reset_code'), # 发送密码重置验证码
+    path('reset_password/', reset_password, name='reset_password'), # 重置密码视
     
 ]
