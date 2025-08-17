@@ -30,6 +30,7 @@ class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         email = request.data.get('email')
         code = request.data.get('code')
+
         # 校验邮箱验证码
         try:
             verification_code = EmailVerificationCode.objects.get(email=email, code=code)
@@ -38,11 +39,13 @@ class RegisterView(generics.CreateAPIView):
                 return Response({'error': '验证码已过期'}, status=status.HTTP_400_BAD_REQUEST)
         except EmailVerificationCode.DoesNotExist:
             return Response({'error': '邮箱未验证或验证码错误'}, status=status.HTTP_400_BAD_REQUEST)
+        
         # 验证通过，创建用户
         response = super().create(request, *args, **kwargs)
         # 注册成功后删除验证码记录
         verification_code.delete()
         return response
+
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     """
@@ -168,10 +171,3 @@ def reset_password(request):
             return JsonResponse({'error': 'Invalid code or email.'}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
-
-def home(request):
-    """
-    Render the home page of the application.
-    """
-    return render(request, 'base.html')

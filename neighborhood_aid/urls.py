@@ -19,9 +19,13 @@ from django.urls import path
 from django.urls import include
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", TemplateView.as_view(template_name='home/base.html'), name='home'),  # 首页视图
+    path('profile/', TemplateView.as_view(template_name='home/base.html'), name='profile'),  # 仪表盘视图
+    path('register/', TemplateView.as_view(template_name='registration/register.html'), name='register'),  # 注册视图
     path('api/accounts/', include('apps.accounts.urls')),
     
     # JWT 认证视图
