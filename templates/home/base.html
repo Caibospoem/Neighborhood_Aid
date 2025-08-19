@@ -372,9 +372,15 @@
             <a href="#" class="nav-item">
                 <span>💬</span> 社区论坛
             </a>
-            <a href="/register/" class="nav-item">
+            {% if user.is_authenticated %}
+            <a href="/profile/" class="nav-item">
+                <span>👤</span> 个人中心
+            </a>
+            {% else %}
+            <a href="/rigister/" class="nav-item active">
                 <span>⚙️</span> 登录/注册
             </a>
+            {% endif %}
         </div>
     </nav>
     
@@ -495,29 +501,6 @@
                 }, 300);
             }, 3000);
         }
-        
-        // 导航项点击效果
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // 移除所有活动状态
-                document.querySelectorAll('.nav-item').forEach(nav => {
-                    nav.style.background = '';
-                });
-                
-                // 添加活动状态
-                this.style.background = '#fff';
-                this.style.color = '#2d5016';
-                
-                // 模拟页面切换效果
-                const main = document.querySelector('main');
-                main.style.opacity = '0.5';
-                setTimeout(() => {
-                    main.style.opacity = '1';
-                }, 200);
-            });
-        });
         
         // 活动项悬停效果
         document.querySelectorAll('.activity-item').forEach(item => {
