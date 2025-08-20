@@ -511,8 +511,11 @@
             <a href="/app/" class="nav-item">
                 <span>💬</span> 社区论坛
             </a>
-            <a href="/profiles/" class="nav-item active">
+            <a href="/profile/" class="nav-item active">
                 <span>👤</span> 个人中心
+            </a>
+            <a href="#" onclick="logout()" class="nav-item">
+                <span>🚪</span> 退出登录
             </a>
         </div>
     </nav>
@@ -760,6 +763,17 @@
                 }, index * 100);
             });
         });
+
+        // 退出登录函数
+        async function logout() {
+            const refresToken = localStorage.getItem('refresh_token');
+
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+
+            window.location.href = '/register/';
+            
+        }
     </script>
 </body>
 </html>

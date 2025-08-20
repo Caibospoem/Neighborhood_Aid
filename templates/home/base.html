@@ -372,15 +372,12 @@
             <a href="#" class="nav-item">
                 <span>💬</span> 社区论坛
             </a>
-            {% if user.is_authenticated %}
-            <a href="/profile/" class="nav-item">
+            <a href="/profile/" class="nav-item" id="profile-link" style="display: none;">
                 <span>👤</span> 个人中心
             </a>
-            {% else %}
-            <a href="/rigister/" class="nav-item active">
+            <a href="/register/" class="nav-item active" id="login-link">
                 <span>⚙️</span> 登录/注册
             </a>
-            {% endif %}
         </div>
     </nav>
     
@@ -464,6 +461,49 @@
     </footer>
     
     <script>
+        // 检查用户是否登录
+        window.onload = function() {
+            checkAuthenStatus();
+        }
+
+        async function checkAuthenStatus() {
+            const token = localStorage.getItem('access_token');
+            const profileLink = document.getElementById('profile-link');
+            const loginLink = document.getElementById('login-link');
+
+            if (!token) {
+                profileLink.style.display = 'none';
+                loginLink.style.display = 'block';
+                return;
+            }
+
+            // 模拟异步请求检查登录状态
+            try {
+                const response = await fetch('/api/accounts/verify-token/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+            if (response.ok) {
+                profileLink.style.display = 'block';
+                loginLink.style.display = 'none';
+            } else {
+                // token无效或过期
+                localStorage.removeItem('access_token');
+                profileLink.style.display = 'none';
+                loginLink.style.display = 'block';
+            }
+        }catch (error) {
+                console.error('检查登录状态失败:', error);
+                profileLink.style.display = 'none';
+                loginLink.style.display = 'block';
+            }
+        }
+
         // 功能卡片点击事件
         function showFeatureInfo(feature) {
             const messages = {

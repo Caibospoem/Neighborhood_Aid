@@ -1,10 +1,8 @@
-from django.shortcuts import render
-
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.utils.crypto import get_random_string
 
 from django.contrib.auth import get_user_model
@@ -57,6 +55,31 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user # 返回当前请求的用户对象
+
+class VerifyTokenView(APIView):
+    def post(self, request):
+        token = request.headers.get('Authorization')
+        if not token or not token.startswith('Bearer '):
+            return Response(
+                {"detail": "Token missing or malformed"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        try:
+            access_token = token.split(' ')[1]
+            decoded_token = AccessToken(access_token)
+            user_id = decoded_token['user_id']
+            # 可以在这里进一步查询用户信息
+            return Response({
+                "valid": True,
+                "user_id": user_id,
+                # 可以返回更多用户信息
+            }, status=status.HTTP_200_OK)
+        except (TokenError, InvalidToken):
+            return Response(
+                {"valid": False, "detail": "Token is invalid or expired"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
 # 发送验证邮件
 # 这个视图可以接受json格式和form格式的请求
