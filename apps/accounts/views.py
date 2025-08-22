@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.utils.crypto import get_random_string
 
 from django.contrib.auth import get_user_model
@@ -45,16 +47,28 @@ class RegisterView(generics.CreateAPIView):
         return response
 
 
-class ProfileView(generics.RetrieveUpdateAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     """
     用户个人信息视图
+
+    * GET: 获取当前用户的个人信息
+    * PUT/PATCH: 更新当前用户的个人信息
+
+    认证方式: JWT
+    权限要求: 仅允许已认证用户访问
     """
-    queryset = User.objects.all() # 获取所有用户
+    authentication_classes = [JWTAuthentication] # 使用 JWT 进行认证
+    permission_classes = [IsAuthenticated] # 仅允许已认证的用户访问此视图
     serializer_class = UserProfileSerializer # 使用序列化器进行数据验证和更新
-    permission_classes = [permissions.IsAuthenticated] # 仅允许已认证的用户访问此视图
+
 
     def get_object(self):
-        return self.request.user # 返回当前请求的用户对象
+        user = self.request.user
+
+        if hasattr(user, 'profile'):
+            return user.profile
+        
+        return user
 
 class VerifyTokenView(APIView):
     def post(self, request):

@@ -8,8 +8,13 @@ from django.conf import settings
 class UserProfile(AbstractUser):
     phone = models.CharField(max_length=11, blank=True, null=True) # 手机号码
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True) # 头像
+    level = models.IntegerField(default=1) # 用户等级，默认为1
     bio = models.TextField(blank=True, null=True) # 个人简介
+    help_count = models.IntegerField(default=0) # 帮助次数
+    helped_count = models.IntegerField(default=0) # 被帮助次数
     address = models.CharField(max_length=255, blank=True, null=True) # 地址
+    points = models.IntegerField(default=0) # 互助积分，默认为0
+    rating = models.FloatField(default=0.0) # 互助评分，默认为0.0
     
     def __str__(self):
         return self.username # 返回用户名

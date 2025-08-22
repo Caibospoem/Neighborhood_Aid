@@ -764,6 +764,117 @@
             });
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取用户信息的函数
+            async function fetchUserProfile() {
+                try {
+                    // 获取JWT token（假设你已登录并存储了token）
+                    const token = localStorage.getItem('access_token') || 
+                                sessionStorage.getItem('access_token');
+                    
+                    if (!token) {
+                        console.error('未找到认证token');
+                        window.location.href = '/register/'; // 重定向到登录页
+                        return;
+                    }
+
+                    // 发送API请求获取用户信息
+                    const response = await fetch('/api/accounts/profile/', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const userData = await response.json();
+                    
+                    // 渲染用户信息到页面
+                    renderUserProfile(userData);
+                    
+                } catch (error) {
+                    console.error('获取用户信息失败:', error);
+                    // 可以在这里添加错误处理，比如显示错误消息
+                    showNotification('获取用户信息失败，请重新登录', 'error');
+                }
+            }
+
+            // 渲染用户信息到页面的函数
+            function renderUserProfile(userData) {
+                // 更新用户名和等级
+                const profileName = document.querySelector('.profile-name');
+                if (profileName) {
+                    profileName.innerHTML = `
+                        ${userData.username || userData.user?.username || '用户'}
+                        <span class="profile-level">Lv.${userData.level || 1}</span>
+                    `;
+                }
+
+                // 更新用户简介
+                const profileBio = document.querySelector('.profile-bio');
+                if (profileBio) {
+                    profileBio.textContent = userData.bio || '这个人很懒，什么都没写~';
+                }
+
+                // 更新统计数据
+                const stats = document.querySelectorAll('.profile-stat-value');
+                if (stats.length >= 4) {
+                    stats[0].textContent = userData.help_count || 0;
+                    stats[1].textContent = userData.helped_count || 0;
+                    stats[2].textContent = userData.mutual_aid_points || 0;
+                    stats[3].textContent = userData.rating || '0.0';
+                }
+
+                // 更新头像
+                const profileAvatar = document.querySelector('.profile-avatar');
+                if (profileAvatar && userData.avatar) {
+                    profileAvatar.innerHTML = `<img src="${userData.avatar}" alt="用户头像" class="avatar-img">`;
+                }
+            }
+
+            // 显示通知的函数
+            function showNotification(message, type = 'info') {
+                // 创建通知元素
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.textContent = message;
+                
+                // 添加到页面
+                document.body.appendChild(notification);
+                
+                // 3秒后自动移除
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+
+            // 编辑资料按钮点击事件
+            const editButton = document.querySelector('.btn-primary');
+            if (editButton) {
+                editButton.addEventListener('click', function() {
+                    // 这里可以添加编辑资料的逻辑，比如打开模态框
+                    showNotification('编辑功能开发中...', 'info');
+                });
+            }
+
+            // 通知设置按钮点击事件
+            const notificationButton = document.querySelector('.btn-secondary');
+            if (notificationButton) {
+                notificationButton.addEventListener('click', function() {
+                    // 这里可以添加通知设置的逻辑
+                    showNotification('通知设置功能开发中...', 'info');
+                });
+            }
+
+            // 页面加载时获取用户信息
+            fetchUserProfile();
+        });
+
+
         // 退出登录函数
         async function logout() {
             const refresToken = localStorage.getItem('refresh_token');
