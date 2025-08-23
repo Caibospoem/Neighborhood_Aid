@@ -1,3 +1,4 @@
+# views.py
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -63,12 +64,10 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
 
     def get_object(self):
-        user = self.request.user
+        return self.request.user
+    
 
-        if hasattr(user, 'profile'):
-            return user.profile
         
-        return user
 
 class VerifyTokenView(APIView):
     def post(self, request):

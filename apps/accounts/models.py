@@ -1,3 +1,4 @@
+# models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
@@ -15,6 +16,8 @@ class UserProfile(AbstractUser):
     address = models.CharField(max_length=255, blank=True, null=True) # 地址
     points = models.IntegerField(default=0) # 互助积分，默认为0
     rating = models.FloatField(default=0.0) # 互助评分，默认为0.0
+    age = models.IntegerField(blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
     
     def __str__(self):
         return self.username # 返回用户名

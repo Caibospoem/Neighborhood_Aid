@@ -1,3 +1,4 @@
+# serializers.py
 # serializers 序列化器 
 # 将较为复杂的数据类型（如Django模型实例或QuerySet）转化成Python原生的数据类型，以便渲染成JSON等格式。
 from rest_framework import serializers
@@ -34,9 +35,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('id', 'username', 'email', 'phone', 'avatar', 'level', 'bio', 'help_count', 'helped_count', 'address', 'points', 'rating')
+        fields = ('id', 'username', 'email', 'phone', 'avatar', 
+                  'level', 'bio', 'help_count', 'helped_count', 
+                  'address', 'points', 'rating', 'age', 'location')
 
 class UserCreditScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCreditScore
         fields = ['score', 'last_updated']
+

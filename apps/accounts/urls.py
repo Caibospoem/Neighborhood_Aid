@@ -1,3 +1,4 @@
+# urls.py
 from django.urls import path
 from .views import RegisterView, UserProfileView, send_verification_email, verify_code, send_password_reset_code, reset_password, VerifyTokenView
 
