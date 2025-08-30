@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 星露谷邻里互助</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D98E 50%, #8B7355 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 像素风格边框 */
+        .pixel-border {
+            border: 4px solid #333;
+            box-shadow: 
+                0 0 0 4px #fff,
+                0 0 0 8px #333,
+                0 0 0 12px #fff;
+            background: #f4e4c1;
+        }
+
+        /* 头部 */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: #8B4513;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            border: 3px solid #654321;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 24px;
+            color: #2d5016;
+            text-shadow: 2px 2px 0 #fff;
+        }
+
+        .subtitle {
+            color: #5a7c47;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        /* 导航栏 */
+        nav {
+            background: rgba(45, 80, 22, 0.9);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 20px;
+            border: 2px solid #fff;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #fff;
+            color: #2d5016;
+            transform: translateY(-2px);
+        }
+
+        /* 主要内容区 */
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* 个人资料卡片 */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #8B4513;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            border: 5px solid #654321;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            color: #2d5016;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-level {
+            background: #8B4513;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .profile-bio {
+            color: #5a7c47;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .profile-stat {
+            text-align: center;
+        }
+
+        .profile-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        .profile-stat-label {
+            font-size: 14px;
+            color: #5a7c47;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e370f;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #8B4513;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #654321;
+            transform: translateY(-2px);
+        }
+
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(45, 80, 22, 0.3);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #5a7c47;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: #2d5016;
+            border-bottom-color: #2d5016;
+        }
+
+        .tab:hover {
+            color: #2d5016;
+        }
+
+        /* 标签页内容 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* 互助记录 */
+        .help-record {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .help-record:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .help-record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .help-record-title {
+            font-weight: bold;
+            color: #2d5016;
+            font-size: 18px;
+        }
+
+        .help-record-date {
+            color: #5a7c47;
+            font-size: 14px;
+        }
+
+        .help-record-details {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .help-record-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-ongoing {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* 成就徽章 */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .achievement:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .achievement-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-name {
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            color: #5a7c47;
+        }
+
+        /* 物品展示 */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .item-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #2d5016;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .item-quantity {
+            font-size: 12px;
+            color: #5a7c47;
+        }
+
+        /* 页脚 */
+        footer {
+            background: rgba(45, 80, 22, 0.9);
+            color: #fff;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-actions {
+                justify-content: center;
+            }
+
+            .help-record-header {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        /* 装饰元素 */
+        .decoration {
+            position: fixed;
+            font-size: 30px;
+            animation: float 6s ease-in-out infinite;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .decoration:nth-child(1) {
+            top: 20%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .decoration:nth-child(2) {
+            top: 60%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+
+        .decoration:nth-child(3) {
+            bottom: 20%;
+            left: 10%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: auto;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 头像样式 */
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        
+
+
+    </style>
+</head>
+<body>
+    <!-- 装饰元素 -->
+    <div class="decoration">🌾</div>
+    <div class="decoration">🥕</div>
+    <div class="decoration">🍅</div>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🏡</div>
+            <div>
+                <h1>星露谷邻里互助</h1>
+                <p class="subtitle">Stardew Valley Neighborhood Aid</p>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-item">
+                <span>🏠</span> 首页
+            </a>
+            <a href="#" class="nav-item">
+                <span>📋</span> 互助任务
+            </a>
+            <a href="#" class="nav-item">
+                <span>👥</span> 邻里成员
+            </a>
+            <a href="#" class="nav-item">
+                <span>📅</span> 活动日历
+            </a>
+            <a href="/app/" class="nav-item">
+                <span>💬</span> 社区论坛
+            </a>
+            <a href="/profile/" class="nav-item active">
+                <span>👤</span> 个人中心
+            </a>
+            <a href="#" onclick="logout()" class="nav-item">
+                <span>🚪</span> 退出登录
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="profile-card">
+        <div class="profile-avatar" id="profileAvatar" style="cursor:pointer;">👨‍🌾</div>
+        <div class="profile-info">
+            <div class="profile-name">
+                张小明
+                <span class="profile-level">Lv.12</span>
+            </div>
+            <p class="profile-bio">热爱农生活的星露谷居民，擅长种植和钓鱼。乐于助人，希望能和大家一起建设美好的社区！</p>
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="profile-stat-value">42</div>
+                    <div class="profile-stat-label">帮助次数</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">28</div>
+                    <div class="profile-stat-label">获得帮助</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">1560</div>
+                    <div class="profile-stat-label">互助积分</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">4.8</div>
+                    <div class="profile-stat-label">互助评分</div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-primary" id="editButton">
+                    <span>✏️</span> 编辑资料
+                </button>
+                <button class="btn btn-secondary">
+                    <span>🔔</span> 通知设置
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- 编辑资料模态框 -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content pixel-border">
+            <div class="modal-header">
+                <h2>编辑个人资料</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- 头像 -->
+                <div class="profile-avatar" id="profileAvatarInModal" style="cursor:pointer;">👨‍🌾</div>
+                <input type="file" id="avatarInput" accept="image/*" style="display:none">
+
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label for="editName">用户名</label>
+                        <input type="text" id="editName" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBio">个人简介</label>
+                        <textarea id="editBio" name="bio" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAge">年龄</label>
+                        <input type="number" id="editAge" name="age" min="1" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLocation">所在地</label>
+                        <input type="text" id="editLocation" name="location">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存更改</button>
+                        <button type="button" class="btn btn-secondary cancel-btn">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('helped')">我帮助的</div>
+            <div class="tab" onclick="switchTab('received')">我获得的帮助</div>
+            <div class="tab" onclick="switchTab('achievements')">我的成就</div>
+            <div class="tab" onclick="switchTab('items')">我的物品</div>
+        </div>
+
+        <div id="helped" class="tab-content active">
+            <div class="help-record">
+                <div class="help-record-header">
+                    <div class="help-record-title">帮助李明修理农具</div>
+                    <div class="help-record-date">2024-05-15</div>
+                </div>
+                <div class="help-record-details">帮助李明修理了损坏的锄头和水壶，花费了2小时。</div>
+                <span class="help-record-status status-completed">已完成</span>
+            </div>
+
+            <div class="help-record">
+                <div class="help-record-header">
+                    <div class="help-record-title">协助王芳收割农作物</div>
+                    <div class="help-record-date">2024-05-12</div>
+                </div>
+                <div class="help-record-details">帮助王芳收割了她农场里的南瓜和玉米，共花费3小时。</div>
+                <span class="help-record-status status-completed">已完成</span>
+            </div>
+
+            <div class="help-record">
+                <div class="help-record-header">
+                    <div class="help-record-title">参与社区道路修缮</div>
+                    <div class="help-record-date">2024-05-10</div>
+                </div>
+                <div class="help-record-details">参与了社区组织的道路修缮活动，和其他居民一起修复了通往矿场的道路。</div>
+                <span class="help-record-status status-completed">已完成</span>
+            </div>
+
+            <div class="help-record">
+                <div class="help-record-header">
+                    <div class="help-record-title">帮助赵雷搭建温室</div>
+                    <div class="help-record-date">2024-05-08</div>
+                </div>
+                <div class="help-record-details">帮助赵雷搭建温室，提供了一些材料和劳动力，预计还需要2天完成。</div>
+                <span class="help-record-status status-ongoing">进行中</span>
+            </div>
+        </div>
+
+        <div id="received" class="tab-content">
+            <div class="help-record">
+                <div class="help-record-header">
+                    <div class="help-record-title">刘华帮我照顾农作物</div>
+                    <div class="help-record-date">2024-05-14</div>
+                </div>
+                <div class="help-record-details">在我外出期间，刘华帮我照顾了农场里的农作物，浇水施肥。</div>
+                <span class="help-record-status status-completed">已完成</span>
+            </div>
+
+            <div class="help-record">
+                <div class="help-record-header">
+                    <div class="help-record-title">陈明提供稀有种子</div>
+                    <div class="help-record-date">2024-05-10</div>
+                </div>
+                <div class="help-record-details">陈明提供了一些稀异的古代种子，让我能够种植古代水果。</div>
+                <span class="help-record-status status-completed">已完成</span>
+            </div>
+
+            <div class="help-record">
+                <div class="help-record-header">
+                    <div class="help-record-title">周婷帮我修理围栏</div>
+                    <div class="help-record-date">2024-05-05</div>
+                </div>
+                <div class="help-record-details">周婷帮我修理了农场周围的围栏，防止野生动物破坏农作物。</div>
+                <span class="help-record-status status-completed">已完成</span>
+            </div>
+        </div>
+
+        <div id="achievements" class="tab-content">
+            <div class="achievements-grid">
+                <div class="achievement">
+                    <div class="achievement-icon">🌱</div>
+                    <div class="achievement-name">新手农夫</div>
+                    <div class="achievement-desc">完成第一次互助任务</div>
+                </div>
+
+                <div class="achievement">
+                    <div class="achievement-icon">🤝</div>
+                    <div class="achievement-name">乐于助人</div>
+                    <div class="achievement-desc">帮助他人10次</div>
+                </div>
+
+                <div class="achievement">
+                    <div class="achievement-icon">🌟</div>
+                    <div class="achievement-name">社区明星</div>
+                    <div class="achievement-desc">获得1000互助积分</div>
+                </div>
+
+                <div class="achievement">
+                    <div class="achievement-icon">🛠️</div>
+                    <div class="achievement-name">能工巧匠</div>
+                    <div class="achievement-desc">完成5次修理任务</div>
+                </div>
+
+                <div class="achievement">
+                    <div class="achievement-icon">🌾</div>
+                    <div class="achievement-name">丰收达人</div>
+                    <div class="achievement-desc">帮助收割10次农作物</div>
+                </div>
+
+                <div class="achievement">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-name">互助模范</div>
+                    <div class="achievement-desc">获得5星好评</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="items" class="tab-content">
+            <div class="items-grid">
+                <div class="item">
+                    <div class="item-icon">🌽</div>
+                    <div class="item-name">玉米</div>
+                    <div class="item-quantity">x25</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-icon">🥕</div>
+                    <div class="item-name">胡萝卜</div>
+                    <div class="item-quantity">x18</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-icon">🍅</div>
+                    <div class="item-name">番茄</div>
+                    <div class="item-quantity">x32</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-icon">🥔</div>
+                    <div class="item-name">土豆</div>
+                    <div class="item-quantity">x15</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-icon">🍇</div>
+                    <div class="item-name">古代水果</div>
+                    <div class="item-quantity">x8</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-icon">🥚</div>
+                    <div class="item-name">鸡蛋</div>
+                    <div class="item-quantity">x12</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-icon">🥛</div>
+                    <div class="item-name">牛奶</div>
+                    <div class="item-quantity">x10</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-icon">🧀</div>
+                    <div class="item-name">奶酪</div>
+                    <div class="item-quantity">x5</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+
+    <footer>
+        <p>© 2024 星露谷邻里互助 · 让我们的社区更加温暖</p>
+        <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+            Inspired by Stardew Valley · Made with ❤️ for our community
+        </p>
+    </footer>
+
+    <script>
+        // 标签页切换
+        function switchTab(tabName) {
+            // 移除所有标签的活动状态
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 激活当前标签
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // 页面加载动画
+        window.addEventListener('load', function() {
+            const elements = document.querySelectorAll('.help-record, .achievement, .item');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.5s ease-out';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取用户信息的函数
+            async function fetchUserProfile() {
+                try {
+                    // 获取JWT token（假设你已登录并存储了token）
+                    const token = localStorage.getItem('access_token') || 
+                                sessionStorage.getItem('access_token');
+
+                    if (!token) {
+                        console.error('未找到认证token');
+                        window.location.href = '/register/'; // 重定向到登录页
+                        return;
+                    }
+
+                    // 发送API请求获取用户信息
+                    const response = await fetch('/api/accounts/profile/', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const userData = await response.json();
+
+                    // 渲染用户信息到页面
+                    renderUserProfile(userData);
+
+                } catch (error) {
+                    console.error('获取用户信息失败:', error);
+                    // 可以在这里添加错误处理，比如显示错误消息
+                    showNotification('获取用户信息失败，请重新登录', 'error');
+                }
+            }
+
+            // 渲染用户信息到页面的函数
+            function renderUserProfile(userData) {
+                // 更新用户名和等级
+                const profileName = document.querySelector('.profile-name');
+                if (profileName) {
+                    profileName.innerHTML = `
+                        ${userData.username || userData.user?.username || '用户'}
+                        <span class="profile-level">Lv.${userData.level || 1}</span>
+                    `;
+                }
+
+                // 更新用户简介
+                const profileBio = document.querySelector('.profile-bio');
+                if (profileBio) {
+                    profileBio.textContent = userData.bio || '这个人很懒，什么都没写~';
+                }
+
+                // 更新统计数据
+                const stats = document.querySelectorAll('.profile-stat-value');
+                if (stats.length >= 4) {
+                    stats[0].textContent = userData.help_count || 0;
+                    stats[1].textContent = userData.helped_count || 0;
+                    stats[2].textContent = userData.mutual_aid_points || 0;
+                    stats[3].textContent = userData.rating || '0.0';
+                }
+
+                // 更新头像
+                const profileAvatar = document.querySelector('.profile-avatar');
+                if (profileAvatar && userData.avatar) {
+                    profileAvatar.innerHTML = `<img src="${userData.avatar}" alt="用户头像" class="avatar-img">`;
+                }
+            }
+
+            // 显示通知的函数
+            function showNotification(message, type = 'info') {
+                // 创建通知元素
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.textContent = message;
+
+                // 添加到页面
+                document.body.appendChild(notification);
+
+                // 3秒后自动移除
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+
+            // 编辑资料按钮点击事件
+            const editButton = document.querySelector('.btn-primary');
+            if (editButton) {
+                editButton.addEventListener('click', function() {
+                    // 这里可以添加编辑资料的逻辑，比如打开模态框
+                    showNotification('编辑功能开发中...', 'info');
+                });
+            }
+
+            // 通知设置按钮点击事件
+            const notificationButton = document.querySelector('.btn-secondary');
+            if (notificationButton) {
+                notificationButton.addEventListener('click', function() {
+                    // 这里可以添加通知设置的逻辑
+                    showNotification('通知设置功能开发中...', 'info');
+                });
+            }
+
+            // 页面加载时获取用户信息
+            fetchUserProfile();
+        });
+
+        // 打开编辑资料模态框
+        document.getElementById('editButton').addEventListener('click', function() {
+            openEditProfileModal();
+        });
+
+        // 填充表单内容并打开模态框
+        async function openEditProfileModal() {
+            try {
+                const response = await fetch('/api/accounts/profile/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token') || sessionStorage.getItem('access_token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const userData = await response.json();
+                document.getElementById('editName').value = userData.username || '';
+                document.getElementById('editBio').value = userData.bio || '';
+                document.getElementById('editAge').value = userData.age || '';
+                document.getElementById('editLocation').value = userData.location || '';
+
+                const profileAvatarInModal = document.getElementById('profileAvatarInModal');
+                if (userData.avatar) {
+                    profileAvatarInModal.innerHTML = `<img src="${userData.avatar}" alt="头像" style="width:100%;height:100%;border-radius:50%;">`;
+                } else {
+                    profileAvatarInModal.innerHTML = '👨‍🌾';
+                }
+
+                document.getElementById('editProfileModal').classList.add('show'); // 显示模态框
+            } catch (error) {
+                console.error('获取用户资料失败:', error);
+            }
+        }
+
+        // 关闭模态框
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('editProfileModal').classList.remove('show');
+        });
+
+        // 取消按钮
+        document.querySelector('.cancel-btn').addEventListener('click', function() {
+            document.getElementById('editProfileModal').classList.remove('show');
+        });
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('editProfileModal');
+            if (event.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+
+        // 上传头像
+        document.getElementById('profileAvatarInModal').addEventListener('click', function() {
+            document.getElementById('avatarInput').click();
+        });
+
+        document.getElementById('avatarInput').addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            try {
+                const response = await fetch('/api/accounts/profile/', {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token') || sessionStorage.getItem('access_token')}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const updatedData = await response.json();
+                if (updatedData.avatar) {
+                    document.getElementById('profileAvatarInModal').innerHTML = `<img src="${updatedData.avatar}" alt="头像" style="width:100%;height:100%;border-radius:50%;">`;
+                }
+
+            } catch (error) {
+                console.error('头像上传失败:', error);
+            }
+        });
+
+        // 提交编辑资料表单
+        document.getElementById('editProfileForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const data = {
+                username: document.getElementById('editName').value,
+                bio: document.getElementById('editBio').value,
+                age: document.getElementById('editAge').value || null,
+                location: document.getElementById('editLocation').value
+            };
+
+            try {
+                const response = await fetch('/api/accounts/profile/', {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token') || sessionStorage.getItem('access_token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    document.getElementById('editProfileModal').classList.remove('show');
+                    alert('资料更新成功');
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('资料更新失败:', error);
+            }
+        });
+
+
+        // 退出登录函数
+        async function logout() {
+            const refresToken = localStorage.getItem('refresh_token');
+
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+
+            window.location.href = '/register/';
+
+        }
+    </script>
+</body>
+</html>
