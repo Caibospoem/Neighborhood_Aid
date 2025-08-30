@@ -389,7 +389,7 @@
                 <input type="password" id="password" placeholder="密码">
             </div>
             <button onclick="login()">登录</button>
-            <p>还没有账号？<a href="#" onclick="showRegisterForm()">立即注册</a></p>
+            <p>还没有账号？<a href="#" onclick="showRegisterForm()">立即注册</a> <a href="#" onclick="showPasswordRecoveryForm()">忘记密码？</a></p>
         </div>
 
         <div class="login-register-box" id="register-form" style="display:none;">
@@ -418,6 +418,24 @@
             <button onclick="register()">注册</button>
             <p>已有账号？<a href="#" onclick="showLoginForm()">立即登录</a></p>
         </div>
+        
+        <div class="password-recovery-box" id="password-recovery-form" style="display:none;">
+            <h2>密码找回</h2>
+            <div>
+                <input type="text" id="recovery_email" placeholder="请输入注册时的邮箱">
+            </div>
+            <button onclick="recoverPassword()">发送重置链接</button>
+            <div>
+                <input type="text" id="recovery_code" placeholder="验证码">
+            </div>
+            <div>
+                <input type="password" id="new_password" placeholder="新密码">
+                <input type="password" id="new_password2" placeholder="确认密码">
+            </div>
+            <button onclick="resetPassword()">重置密码</button>
+            <p>记起密码了？<a href="#" onclick="showLoginForm()">返回登录</a></p>
+
+        </div>
     </div>
 
     <script>
@@ -425,11 +443,19 @@
         function showRegisterForm() {
             document.querySelector('.login-register-box').style.display = 'none';
             document.getElementById('register-form').style.display = 'block';
+            document.getElementById('password-recovery-form').style.display = 'none';
         }
 
         function showLoginForm() {
-            document.getElementById('register-form').style.display = 'none';
             document.querySelector('.login-register-box').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('password-recovery-form').style.display = 'none';
+        }
+
+        function showPasswordRecoveryForm() {
+            document.querySelector('.login-register-box').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('password-recovery-form').style.display = 'block';
         }
 
         // 登录函数
@@ -536,6 +562,66 @@
                 }
             }
             return cookieValue;
+        }
+
+        async function recoverPassword() {
+            const email = document.getElementById('recovery_email').value;
+            if (!email) {
+                alert('请输入注册时的邮箱');
+                return;
+            }
+
+            const response = await fetch('/api/accounts/send_password_reset_code/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ email: email })
+            });
+
+            if (response.ok) {
+                alert('重置链接已发送到您的邮箱，请查收');
+            } else {
+                const error = await response.json();
+                alert(`发送重置链接失败: ${error.detail}`);
+            }
+        }
+        
+        async function resetPassword() {
+            const email = document.getElementById('recovery_email').value;
+            const code = document.getElementById('recovery_code').value;
+            const newPassword = document.getElementById('new_password').value;
+            const newPassword2 = document.getElementById('new_password2').value;
+
+            if (newPassword !== newPassword2) {
+                alert('两次输入的密码不一致');
+                return;
+            }
+
+            const response = await fetch('/api/accounts/reset_password/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    email: email,
+                    code: code,
+                    new_password: newPassword,
+                    new_password2: newPassword2
+                })
+            });
+
+            if (response.ok) {
+                alert('密码重置成功，请登录');
+                showLoginForm();
+                
+            } else {
+                const error = await response.json();
+                alert(`密码重置失败: ${error.detail}`);
+            }
+            
         }
     </script>
 </body>
