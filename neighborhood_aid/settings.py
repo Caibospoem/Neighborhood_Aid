@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -136,7 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.UserProfile'
 
 
-# REST Framework 全局配置 
+
+# JWT 配置
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 认证类配置（按顺序尝试）
@@ -145,10 +147,8 @@ REST_FRAMEWORK = {
 
 }
 
-
-# Simple JWT 扩展配置
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5), # Access token 有效期为 5 分钟
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15), # Access token 有效期为 5 分钟
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # Refresh token 有效期为 1 天
     'ROTATE_REFRESH_TOKENS': True, # 是否在刷新时生成新的 Refresh token
 }
@@ -161,3 +161,17 @@ EMAIL_USE_SSL = True # 使用SSL连接
 EMAIL_HOST_USER = '2180141783@qq.com' # 发件人邮箱地址
 EMAIL_HOST_PASSWORD = 'dmreqjrhddbddjab' # 发件人邮箱的授权码
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # 默认发件人邮箱地址
+
+
+# Redis 缓存配置
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache', # 使用 django-redis 作为缓存后端
+        'LOCATION': 'redis://127.0.0.1:6379/1', # Redis 服务器默认地址
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# 
