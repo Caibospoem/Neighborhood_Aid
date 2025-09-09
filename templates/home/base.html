@@ -505,6 +505,61 @@
             }
         }
 
+        // 刷新Token函数
+        async function refreshToken() {
+            const refresh = localStorage.getItem('refresh_token');
+            const session_id = localStorage.getItem('session_id');
+            if (!refresh) {
+                alert('没有刷新令牌，请重新登录');
+                showLoginForm();
+                return;
+            }
+
+            const response = await fetch('/api/accounts/token/refresh/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    refresh: refresh,
+                    session_id: session_id
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                localStorage.setItem('session_id', data.session_id);
+            } else {
+                alert('刷新令牌失败，请重新登录');
+                showLoginForm();
+            }
+        }
+
+        // 自动处理 access_token 过期的 fetch
+        async function authFetch(url, options = {}) {
+            let access = localStorage.getItem('access_token');
+
+            if (!options.headers) options.headers = {};
+            options.headers['Authorization'] = `Bearer ${access}`;
+
+            let response = await fetch(url, options);
+
+            if (response.status === 401) {  
+                // access 可能过期，尝试刷新
+                access = await refreshToken();
+                if (access) {
+                    options.headers['Authorization'] = `Bearer ${access}`;
+                    response = await fetch(url, options); // 重试请求
+                }
+            }
+
+            return response;
+        }
+
+
         // 功能卡片点击事件
         function showFeatureInfo(feature) {
             const messages = {

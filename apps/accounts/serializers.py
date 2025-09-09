@@ -6,6 +6,8 @@ from .models import UserProfile, UserCreditScore
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 User = get_user_model()
 
 # Serializers for UserProfile model
@@ -44,3 +46,17 @@ class UserCreditScoreSerializer(serializers.ModelSerializer):
         model = UserCreditScore
         fields = ['score', 'last_updated']
 
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # 你可以往 token 里加自定义字段
+        token["username"] = user.username
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # 在 serializer 里可以拿到 user
+        data["user_id"] = self.user.id
+        data["username"] = self.user.username
+        return data

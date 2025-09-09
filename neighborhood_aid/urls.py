@@ -29,7 +29,8 @@ urlpatterns = [
     path('register/', TemplateView.as_view(template_name='registration/register.html'), name='register'),  # 注册视图
     path('api/accounts/', include('apps.accounts.urls')),
     
-    # JWT 认证视图
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # 获取 JWT 访问令牌
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # 刷新 JWT 访问令牌
+    
+    # # JWT 认证视图
+    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # 获取 JWT 访问令牌
+    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # 刷新 JWT 访问令牌
 ]

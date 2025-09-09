@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils.crypto import get_random_string
 
 from django.contrib.auth import get_user_model
-from .serializers import UserProfileSerializer, UserRegisterSerializer
+from .serializers import UserProfileSerializer, UserRegisterSerializer, MyTokenObtainPairSerializer
 from .models import EmailVerificationCode
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -17,7 +17,12 @@ from neighborhood_aid.settings import DEFAULT_FROM_EMAIL
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 
-
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.cache import cache
+import uuid
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.exceptions import AuthenticationFailed
+ 
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -65,11 +70,11 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
-    
-
-        
 
 class VerifyTokenView(APIView):
+    """
+    验证 JWT Token 的视图
+    """
     def post(self, request):
         token = request.headers.get('Authorization')
         if not token or not token.startswith('Bearer '):
@@ -93,6 +98,57 @@ class VerifyTokenView(APIView):
                 {"valid": False, "detail": "Token is invalid or expired"},
                 status=status.HTTP_401_UNAUTHORIZED
             )
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    """
+    自定义 TokenObtainPairView 以支持 session_id 功能
+    """
+    serializer_class = MyTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            data = response.data
+            session_id = str(uuid.uuid4())
+            # user 信息从 serializer 拿，而不是 self
+            user_id = data.get("user_id")
+
+            # 设置缓存，保存 session_id 和 refresh token 的映射
+            cache.set(
+                f"session:{session_id}",
+                {"user_id": user_id, "refresh": data["refresh"]},
+                timeout=60 * 60 * 24 * 7,
+            )
+
+            data["session_id"] = session_id
+            response.data = data
+        return response
+
+    
+class MyTokenRefreshView(TokenRefreshView):
+    """
+    自定义 TokenRefreshView 以支持 session_id 功能
+    """
+    def post(self, request, *args, **kwargs):
+        session_id = request.data.get("session_id")
+        refresh = request.data.get("refresh")
+
+        if not session_id or not refresh:
+            raise AuthenticationFailed("Missing session_id or refresh")
+
+        session_data = cache.get(f"session:{session_id}")
+        if not session_data or session_data["refresh"] != refresh:
+            raise AuthenticationFailed("Session expired or invalid")
+
+        return super().post(request, *args, **kwargs)
+
+class LogoutView(APIView):
+    def post(self, request):
+        session_id = request.data.get("session_id")
+        if session_id:
+            cache.delete(f"session:{session_id}")
+        return Response({"message": "Logged out"})
 
 # 发送验证邮件
 # 这个视图可以接受json格式和form格式的请求

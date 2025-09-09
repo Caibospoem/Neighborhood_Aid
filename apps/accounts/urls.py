@@ -1,14 +1,19 @@
 # urls.py
 from django.urls import path
-from .views import RegisterView, UserProfileView, send_verification_email, verify_code, send_password_reset_code, reset_password, VerifyTokenView
+from .views import RegisterView, UserProfileView, send_verification_email, verify_code, send_password_reset_code, reset_password, VerifyTokenView \
+    , MyTokenObtainPairView, MyTokenRefreshView, LogoutView
 
 
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'), # 用户注册视图
     path('profile/', UserProfileView.as_view(), name='profile'), # 用户个人信息视图
-    path('verify-token/', VerifyTokenView.as_view(), name='verify-token'), # 
-    
+    path('verify-token/', VerifyTokenView.as_view(), name='verify-token'), # 验证Token视图
+
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'), # 获取JWT Token视图
+    path('token/refresh/', MyTokenRefreshView.as_view(), name='token_refresh'), # 刷新JWT Token视图
+    path('logout/', LogoutView.as_view(), name='logout'), # 用户登出视图
+
     path('send_verification_email/', send_verification_email, name='send_verification_email'), # 发送邮箱验证邮件
     path('verify_email/', verify_code, name='verify_email'), # 验证邮箱视图
     path('send_password_reset_code/', send_password_reset_code, name='send_password_reset_code'), # 发送密码重置验证码

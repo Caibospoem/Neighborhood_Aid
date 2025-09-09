@@ -1161,8 +1161,73 @@
         });
 
 
+        // 刷新 access_token
+        async function refreshToken() {
+            const refresh = localStorage.getItem('refresh_token');
+            const sessionId = localStorage.getItem('session_id');
+
+            if (!refresh || !sessionId) {
+                window.location.href = '/register/';
+                return;
+            }
+
+            const response = await fetch('/api/accounts/token/refresh/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    refresh: refresh,
+                    session_id: sessionId
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access);
+                return data.access;
+            } else {
+                // refresh 过期，清理并跳转登录
+                localStorage.clear();
+                window.location.href = '/register/';
+            }
+        }
+
+        // 自动带上 access_token，并在过期时自动刷新
+        async function authFetch(url, options = {}) {
+            let access = localStorage.getItem('access_token');
+            if (!options.headers) options.headers = {};
+            options.headers['Authorization'] = `Bearer ${access}`;
+
+            let response = await fetch(url, options);
+
+            if (response.status === 401) {
+                // access 可能过期，尝试刷新
+                access = await refreshToken();
+                if (access) {
+                    options.headers['Authorization'] = `Bearer ${access}`;
+                    response = await fetch(url, options); // 再试一次
+                }
+            }
+
+            return response;
+        }
+
+
+
+
         // 退出登录函数
         async function logout() {
+            const session_id = localStorage.getItem('session_id');
+
+            await fetch('/api/accounts/logout/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ session_id: session_id })
+            });
+
+            localStorage.clear();
+            window.location.href = '//';
             const refresToken = localStorage.getItem('refresh_token');
 
             localStorage.removeItem('access_token');
