@@ -118,7 +118,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
             cache.set(
                 f"session:{session_id}",
                 {"user_id": user_id, "refresh": data["refresh"]},
-                timeout=60 * 60 * 24 * 7,
+                timeout=60 * 60 * 24 * 3,
             )
 
             data["session_id"] = session_id

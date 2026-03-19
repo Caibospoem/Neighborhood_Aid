@@ -468,38 +468,31 @@
         }
 
         async function checkAuthenStatus() {
-            const token = localStorage.getItem('access_token');
             const profileLink = document.getElementById('profile-link');
             const loginLink = document.getElementById('login-link');
 
-            if (!token) {
-                profileLink.style.display = 'none';
-                loginLink.style.display = 'block';
-                return;
-            }
-
-            // 模拟异步请求检查登录状态
             try {
-                const response = await fetch('/api/accounts/verify-token/', {
+                // 用 authFetch 请求 verify-token
+                const response = await authFetch('/api/accounts/verify-token/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ token })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: localStorage.getItem('access_token')
+                    })
                 });
 
-            if (response.ok) {
-                profileLink.style.display = 'block';
-                loginLink.style.display = 'none';
-            } else {
-                // token无效或过期
-                localStorage.removeItem('access_token');
-                profileLink.style.display = 'none';
-                loginLink.style.display = 'block';
-            }
-        }catch (error) {
+                if (response.ok) {
+                    profileLink.style.display = 'block';
+                    loginLink.style.display = 'none';
+                } else {
+                    // 如果 verify 都失败，说明 refresh 也过期了
+                    localStorage.clear();
+                    profileLink.style.display = 'none';
+                    loginLink.style.display = 'block';
+                }
+            } catch (error) {
                 console.error('检查登录状态失败:', error);
+                localStorage.clear();
                 profileLink.style.display = 'none';
                 loginLink.style.display = 'block';
             }

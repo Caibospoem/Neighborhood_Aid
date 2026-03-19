@@ -148,8 +148,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15), # Access token 有效期为 5 分钟
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # Refresh token 有效期为 1 天
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15), # Access token 有效期为 15 分钟
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3), # Refresh token 有效期为 3 天
     'ROTATE_REFRESH_TOKENS': True, # 是否在刷新时生成新的 Refresh token
 }
 
